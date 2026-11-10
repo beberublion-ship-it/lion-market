@@ -2,22 +2,18 @@ services:
   - type: web
     name: lion-market
     runtime: node
-    plan: starter
+    plan: free
     region: frankfurt
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
     autoDeploy: true
-    disk:
-      name: lion-market-data
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DB_PATH
-        value: /var/data/lionmarket.db
+      - key: SUPABASE_URL
+        value: https://lluhzamucvmoztcyuftb.supabase.co
+      - key: SUPABASE_PUBLISHABLE_KEY
+        value: sb_publishable_5Aefhy4qW6EblMyoE0ZG8Q_gmxcAiAc
       - key: WHATSAPP_NUMBER
         value: 237656342696
-      - key: OPENAI_API_KEY
-        sync: false
