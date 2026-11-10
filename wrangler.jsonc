@@ -10,6 +10,8 @@
     "run_worker_first": ["/api/*", "/health"]
   },
   "vars": {
-    "WHATSAPP_NUMBER": "237656342697"
+    "WHATSAPP_NUMBER": "237656342697",
+    "SUPABASE_URL": "https://lluhzamucvmoztcyuftb.supabase.co",
+    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_5Aefhy4qW6EblMyoE0ZG8Q_gmxcAiAc"
   }
 }
