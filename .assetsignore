@@ -1,3 +1,12 @@
-# Fichiers internes : ne pas publier comme ressources du site
+# Seule la page publique index.html doit être publiée par Cloudflare
+# Exclure le code serveur, les configurations et les fichiers de développement
 worker.js
+server.js
+database.js
 wrangler.jsonc
+render.yaml
+package.json
+README.md
+.env.example
+.gitignore
+Index.html
