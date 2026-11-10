@@ -46,7 +46,7 @@ export default {
     }
 
     if (url.pathname === "/api/config" && request.method === "GET") {
-      return json({ whatsappNumber: String(env.WHATSAPP_NUMBER || "237656342696").replace(/\\D/g, "") });
+      return json({ whatsappNumber: String(env.WHATSAPP_NUMBER || "237656342696").replace(/\D/g, "") });
     }
 
     if (url.pathname === "/api/products" && request.method === "GET") {
@@ -65,14 +65,14 @@ export default {
         const city = typeof input.city === "string" ? input.city.trim() : "";
         const category = typeof input.category === "string" ? input.category.trim() : "";
         const price = Number(input.price);
-        const phone = String(input.phone || env.WHATSAPP_NUMBER || "").replace(/\\D/g, "");
+        const phone = String(input.phone || env.WHATSAPP_NUMBER || "").replace(/\D/g, "");
         if (!name || name.length > 100 || !city || city.length > 80 || !DEFAULT_CATEGORY.has(category)) {
           return json({ error: "Vérifiez le nom, la ville et la catégorie." }, 400);
         }
         if (!Number.isSafeInteger(price) || price < 1 || price > 1000000000) {
           return json({ error: "Le prix doit être un nombre entier positif." }, 400);
         }
-        if (!/^\\d{9,15}$/.test(phone)) return json({ error: "Numéro WhatsApp invalide." }, 400);
+        if (!/^\d{9,15}$/.test(phone)) return json({ error: "Numéro WhatsApp invalide." }, 400);
         let image = "";
         if (input.image) {
           try {
