@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname), { dotfiles: 'ignore' }));
 app.get('/health', async (req, res) => {
   try {
     await getProducts();
-    res.json({ ok: true, name: 'lion-market' });
+    res.json({ ok: true, name: 'lion-market', database: 'supabase' });
   } catch (error) {
     console.error('Health check failed:', error);
     res.status(503).json({ ok: false, error: 'Base de données indisponible.' });
@@ -61,10 +61,10 @@ app.post('/api/products', async (req, res) => {
   if (image) {
     try {
       const parsed = new URL(String(image));
-      if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Invalid protocol');
+      if (parsed.protocol !== 'https:') throw new Error('Invalid protocol');
       cleanImage = parsed.toString();
     } catch {
-      return res.status(400).json({ error: 'Le lien de la photo doit être une URL HTTP ou HTTPS valide.' });
+      return res.status(400).json({ error: 'Le lien de la photo doit être une URL HTTPS valide.' });
     }
   }
 
