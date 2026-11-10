@@ -11,7 +11,7 @@ Marketplace camerounaise connectée à Supabase, avec annonces en FCFA, contact 
 
 ## Développement local
 
-Prérequis : Node.js 20 ou plus récent.
+Prérequis : Node.js 22 ou plus récent.
 
 ```bash
 npm install
