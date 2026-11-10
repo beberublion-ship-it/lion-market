@@ -13,7 +13,7 @@ const categories = new Set(['Téléphones', 'Informatique', 'Mode', 'Maison', 'V
 
 app.disable('x-powered-by');
 app.use(express.json({ limit: '100kb' }));
-app.use(express.static(path.join(__dirname), { dotfiles: 'ignore' }));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 app.get('/health', async (req, res) => {
   try {
