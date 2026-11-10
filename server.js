@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 const port = Number(process.env.PORT) || 3000;
 const shopWhatsApp = String(process.env.WHATSAPP_NUMBER || '237656342697').replace(/\D/g, '');
-const categories = new Set(['Téléphones', 'Informatique', 'Mode', 'Maison', 'Véhicules', 'Beauté', 'Services']);
+const categories = new Set(['Téléphones', 'Informatique', 'Mode', 'Maison', 'Véhicules', 'Transport', 'Beauté', 'Services']);
 
 app.disable('x-powered-by');
 app.use(express.json({ limit: '100kb' }));
