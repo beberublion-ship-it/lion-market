@@ -1,4 +1,5 @@
 {
+  "workers_dev": true,
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "lion-market",
   "main": "worker.js",
