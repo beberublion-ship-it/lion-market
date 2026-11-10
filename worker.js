@@ -1,4 +1,4 @@
-const DEFAULT_CATEGORY = new Set(["Téléphones", "Informatique", "Mode", "Maison", "Véhicules", "Beauté", "Services"]);
+const DEFAULT_CATEGORY = new Set(["Téléphones", "Informatique", "Mode", "Maison", "Véhicules", "Transport", "Beauté", "Services"]);
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
