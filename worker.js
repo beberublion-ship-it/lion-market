@@ -46,7 +46,7 @@ export default {
     }
 
     if (url.pathname === "/api/config" && request.method === "GET") {
-      return json({ whatsappNumber: String(env.WHATSAPP_NUMBER || "237656342696").replace(/\D/g, "") });
+      return json({ whatsappNumber: String(env.WHATSAPP_NUMBER || "237656342697").replace(/\D/g, "") });
     }
 
     if (url.pathname === "/api/products" && request.method === "GET") {
