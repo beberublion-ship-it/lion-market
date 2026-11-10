@@ -1,42 +1,55 @@
 # LION MARKET
 
-Marketplace camerounais avec annonces sauvegardées dans SQLite, panier WhatsApp et assistant IA optionnel.
+Marketplace camerounaise connectée à Supabase, avec annonces en FCFA, contact WhatsApp et assistant local gratuit.
 
-## Lancer en local
+## Architecture
+
+- GitHub : dépôt source.
+- Render : serveur Node.js avec déploiement automatique depuis la branche `main`.
+- Supabase : base PostgreSQL persistante pour les annonces.
+- WhatsApp : contact direct entre acheteurs et vendeurs.
+
+## Développement local
 
 Prérequis : Node.js 20 ou plus récent.
 
 ```bash
 npm install
 cp .env.example .env
+# Renseigner SUPABASE_PUBLISHABLE_KEY dans .env
 npm start
 ```
 
-Ouvrir http://localhost:3000. Le site et les annonces sont servis par le même serveur.
+Ouvrir http://localhost:3000.
 
-## Configuration
+## Variables d'environnement
 
-- `PORT` : port HTTP (défini automatiquement par Render en production).
-- `DB_PATH` : chemin du fichier SQLite. En local, `./lionmarket.db`; sur Render, `/var/data/lionmarket.db`.
-- `WHATSAPP_NUMBER` : numéro de commande avec indicatif international, chiffres uniquement. La valeur configurée est `237656342696`.
-- `OPENAI_API_KEY` : facultative pour le chatbot OpenAI. Sans clé, l’assistant utilise des réponses locales.
+- `SUPABASE_URL` : URL du projet Supabase.
+- `SUPABASE_PUBLISHABLE_KEY` : clé publishable Supabase. Elle est conçue pour être utilisée par l'application et reste protégée par les politiques RLS.
+- `WHATSAPP_NUMBER` : numéro de contact avec indicatif international, chiffres uniquement.
+- `OPENAI_API_KEY` : facultative et payante selon l'utilisation. Sans cette clé, l'assistant local fonctionne sans frais d'API.
 
-Ne publiez jamais votre clé OpenAI dans GitHub ni dans le code. Ajoutez-la uniquement dans les variables d’environnement de l’hébergeur.
+Ne jamais mettre une clé Supabase secrète/service_role ni une clé OpenAI dans le dépôt GitHub.
 
-## Déployer sur Render
+## Déploiement Render gratuit
 
-Le fichier `render.yaml` configure un service Node, la commande `npm install`, le démarrage `npm start`, le contrôle `/health` et un disque persistant monté sur `/var/data` pour la base SQLite.
+Le fichier `render.yaml` définit un service web sur le plan Free, sans disque persistant. Les annonces sont stockées dans Supabase et ne dépendent donc pas du système de fichiers éphémère de Render.
 
-1. Dans Render, choisissez **New → Blueprint** et connectez `beberublion-ship-it/lion-market`.
-2. Examinez le plan et le disque proposés, puis créez le service. Le disque persistant Render peut entraîner des frais selon le plan et les tarifs en vigueur.
-3. Ajoutez `OPENAI_API_KEY` dans **Environment** si vous souhaitez activer les réponses OpenAI. Laissez vide si vous voulez le chatbot local.
-4. Attendez la fin du déploiement, puis vérifiez `/health` et la page d’accueil.
+1. Dans Render, ouvrir **New → Blueprint**.
+2. Connecter le dépôt `beberublion-ship-it/lion-market`.
+3. Vérifier que le service `lion-market` est sur le plan **Free**, puis appliquer le Blueprint.
+4. Render déploie automatiquement les futurs commits de la branche `main`.
 
-Les annonces sont persistées dans SQLite sur le disque Render. Évitez plusieurs instances du service avec un même fichier SQLite.
+Les services Render Free peuvent s'endormir après 15 minutes d'inactivité et le premier chargement suivant peut prendre environ une minute. Render Free n'est pas destiné à une application commerciale critique.
 
-## État et limites de cette première version
+## Base de données
 
-- Les annonces peuvent être publiées sans compte ni modération. Pour une ouverture publique, ajoutez authentification, modération anti-spam, limitation de débit et gestion des abus avant d’en faire une marketplace commerciale.
-- Le paiement n’est pas intégré : vendeur et acheteur conviennent du paiement et de la livraison via WhatsApp.
-- Les annonces de démonstration sont insérées uniquement lorsque la base est vide.
-- L’API OpenAI est facultative et peut générer des coûts selon son usage.
+La table existante `public.annonces` est utilisée avec les colonnes `id, nom, prix, categorie, ville, image_url, telephone, description, created_at`. Les annonces déjà présentes sont conservées. La lecture et la création passent par les politiques RLS de Supabase.
+
+## Vérifications
+
+```bash
+npm run check
+```
+
+Le point de contrôle de santé est `/health`. Il vérifie la connexion à Supabase.
