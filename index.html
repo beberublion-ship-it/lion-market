@@ -1,452 +1,74 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LION MARKET - Marketplace Cameroun</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123c2b">
+  <meta name="description" content="Achetez, vendez et trouvez des services près de chez vous au Cameroun avec LION MARKET.">
+  <title>LION MARKET — Le marché de proximité au Cameroun</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #222;
-    }
-    header {
-      background: #171717;
-      color: white;
-      padding: 18px 5%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    .logo { font-size: 26px; font-weight: bold; color: #ffc400; }
-    .logo span { color: white; }
-    header button, .btn {
-      background: #ffc400;
-      border: 0;
-      padding: 12px 18px;
-      border-radius: 7px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .hero {
-      background: linear-gradient(120deg, #171717, #454545);
-      color: white;
-      padding: 55px 6%;
-      text-align: center;
-    }
-    .hero h1 { font-size: 36px; margin-bottom: 15px; }
-    .hero h1 span { color: #ffc400; }
-    .hero p { margin-bottom: 22px; line-height: 1.6; }
-    .search { display: flex; max-width: 600px; margin: auto; }
-    .search input { flex: 1; padding: 15px; border: 0; border-radius: 7px 0 0 7px; min-width: 0; }
-    .search button { border-radius: 0 7px 7px 0; }
-    section { padding: 30px 5%; }
-    h2 { margin-bottom: 20px; }
-    .categories { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; }
-    .cat {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 15px;
-      min-width: 115px;
-      text-align: center;
-      cursor: pointer;
-    }
-    .cat:hover, .cat.active { background: #ffc400; }
-    .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 16px; }
-    .product {
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px #0001;
-    }
-    .product img {
-      width: 100%;
-      height: 155px;
-      object-fit: cover;
-      background: #eee;
-    }
-    .product-info { padding: 12px; }
-    .product h3 { font-size: 15px; margin-bottom: 8px; }
-    .price { font-weight: bold; color: #b47b00; margin-bottom: 10px; }
-    .product button { width: 100%; margin-top: 7px; }
-    .add {
-      background: #171717;
-      color: white;
-      border: 0;
-      padding: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .contact {
-      background: #171717;
-      color: white;
-      text-align: center;
-      padding: 35px 5%;
-      line-height: 2;
-    }
-    .assistant {
-      padding: 30px 5% 40px;
-      background: #fff;
-    }
-    .assistant-box {
-      max-width: 900px;
-      margin: auto;
-      background: #f9f9f9;
-      border: 1px solid #e5e5e5;
-      border-radius: 14px;
-      padding: 20px;
-    }
-    #chatMessages {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-height: 180px;
-      max-height: 300px;
-      overflow-y: auto;
-      margin-bottom: 12px;
-      padding-right: 8px;
-    }
-    .message {
-      max-width: 80%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      line-height: 1.5;
-      word-break: break-word;
-    }
-    .message.user {
-      background: #171717;
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 4px;
-    }
-    .message.bot {
-      background: #ffe9a8;
-      color: #222;
-      align-self: flex-start;
-      border-bottom-left-radius: 4px;
-    }
-    .chat-controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .chat-controls input {
-      flex: 1;
-      min-width: 240px;
-      padding: 14px 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      background: #111;
-      color: white;
-      font-size: 13px;
-    }
-    .modal { display: none; position: fixed; inset: 0; background: #0009; z-index: 10; overflow: auto; padding: 20px; }
-    .modal-content {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      max-width: 450px;
-      margin: 40px auto;
-    }
-    .modal input, .modal textarea, .modal select {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    .close { float: right; cursor: pointer; font-size: 22px; }
-    .cart-item { padding: 12px; border-bottom: 1px solid #ddd; }
-    @media (max-width: 500px) {
-      .hero h1 { font-size: 27px; }
-      header { justify-content: center; }
-      .products { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .chat-controls { flex-direction: column; align-items: stretch; }
-      .chat-controls button { width: 100%; }
-    }
+    :root{color-scheme:light;--green:#123c2b;--green2:#246c48;--gold:#f5b82e;--light:#f5f7f4;--ink:#202820;--muted:#66736a}
+    *{box-sizing:border-box}body{margin:0;font:16px/1.5 Arial,sans-serif;background:var(--light);color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer}header{background:var(--green);color:white;padding:16px max(16px,calc((100% - 1150px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px}.logo{font-size:24px;font-weight:900}.logo span{color:var(--gold)}.tagline{font-size:12px;color:#dce8df}.btn{border:0;border-radius:8px;background:var(--gold);padding:11px 16px;font-weight:bold;color:#18251c}.hero{background:linear-gradient(120deg,var(--green),var(--green2));color:#fff;text-align:center;padding:48px 16px}.hero h1{margin:0 0 8px;font-size:clamp(25px,4vw,36px)}.hero p{margin:0;color:#e0eee4}.search{display:flex;max-width:620px;margin:22px auto 0;gap:8px}.search input{flex:1;min-width:0;padding:13px;border:0;border-radius:8px}.search button{border:0;border-radius:8px;background:var(--gold);padding:0 18px;font-weight:bold}.container{max-width:1180px;margin:auto;padding:26px 16px}.section-title{font-size:22px;margin:0 0 16px}.categories{display:flex;gap:9px;overflow:auto;padding-bottom:8px}.category{flex:none;padding:10px 14px;border:1px solid #e1e6e1;background:white;border-radius:9px;font-weight:bold}.category.active,.category:hover{background:var(--green);color:white}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:25px 0 15px}.section-head .section-title{margin:0}.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}.product{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px #0000000b}.product img{width:100%;height:175px;object-fit:cover;background:#eee}.product-info{padding:13px}.product h3{margin:0 0 6px;font-size:17px}.price{color:#17683d;font-weight:900;font-size:18px}.location{margin:6px 0;color:var(--muted);font-size:13px}.description{min-height:42px;font-size:14px;color:#4f5b53}.contact{display:block;text-align:center;text-decoration:none;background:var(--green);color:white;padding:10px;border-radius:7px;font-weight:bold;margin-top:12px}.contact:hover{background:var(--green2)}.empty{background:white;padding:28px;text-align:center;border-radius:10px;grid-column:1/-1}.assistant{background:#fff;padding:30px 16px}.assistant-box{max-width:900px;margin:auto;background:#fafbf9;border:1px solid #e5e9e5;border-radius:14px;padding:18px}.chat-messages{display:flex;flex-direction:column;gap:10px;min-height:100px;max-height:300px;overflow:auto;margin:12px 0}.message{max-width:82%;padding:10px 13px;border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere}.message.user{align-self:flex-end;background:var(--green);color:#fff}.message.bot{align-self:flex-start;background:#ffe9a8}.chat-controls{display:flex;gap:8px}.chat-controls input{flex:1;min-width:0;padding:12px;border:1px solid #d5ddd6;border-radius:8px}.modal{display:none;position:fixed;inset:0;z-index:5;background:#0009;padding:16px;overflow:auto}.modal.open{display:block}.modal-content{max-width:480px;background:white;padding:22px;border-radius:14px;margin:30px auto}.modal-content h2{margin-top:0}.modal-content label{display:block;font-weight:bold;margin-top:9px}.modal-content input,.modal-content select,.modal-content textarea{width:100%;padding:11px;border:1px solid #ccd4cd;border-radius:7px;margin:5px 0}.modal-content textarea{min-height:80px;resize:vertical}.modal-actions{display:flex;gap:10px;margin-top:12px}.modal-actions button{flex:1}.secondary{border:1px solid #ccd4cd;border-radius:8px;background:white;padding:10px}.close-row{display:flex;justify-content:space-between;align-items:center}.close-row h2{margin:0}.close-row button{border:0;background:transparent;font-size:24px}footer{background:#102b20;color:white;text-align:center;padding:28px 16px;margin-top:30px}footer span{color:var(--gold)}@media(max-width:550px){header{flex-wrap:wrap}.products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product img{height:135px}.product-info{padding:10px}.search button{padding:0 12px}.chat-controls{flex-direction:column}.chat-controls button{width:100%}.section-head{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
 <body>
   <header>
-    <div class="logo">🦁 LION <span>MARKET</span></div>
-    <button onclick="openModal('cart')">🛒 Panier (<span id="count">0</span>)</button>
+    <div><div class="logo">🦁 LION <span>MARKET</span></div><div class="tagline">La marketplace de proximité au Cameroun</div></div>
+    <button class="btn" id="openSell">+ Déposer une annonce</button>
   </header>
-
-  <div class="hero">
-    <h1>Bienvenue sur <span>LION MARKET</span></h1>
-    <p>Le grand marché numérique du Cameroun.<br>Achetez, vendez et trouvez vos services au meilleur prix !</p>
-    <div class="search">
-      <input id="search" placeholder="Que recherchez-vous ?" oninput="render()">
-      <button onclick="render()">Rechercher</button>
-    </div>
-  </div>
-
-  <section>
-    <h2>📂 Nos catégories</h2>
-    <div class="categories">
-      <div class="cat active" onclick="category('Tous', this)">🌍 Tous</div>
-      <div class="cat" onclick="category('Téléphones', this)">📱 Téléphones</div>
-      <div class="cat" onclick="category('Informatique', this)">💻 Informatique</div>
-      <div class="cat" onclick="category('Mode', this)">👕 Mode</div>
-      <div class="cat" onclick="category('Maison', this)">🏠 Maison</div>
-      <div class="cat" onclick="category('Transport', this)">🚗 Transport</div>
-      <div class="cat" onclick="category('Beauté', this)">💄 Beauté</div>
-      <div class="cat" onclick="category('Services', this)">🛠️ Services</div>
-    </div>
+  <section class="hero">
+    <h1>Achetez et vendez facilement au Cameroun</h1>
+    <p>Découvrez des produits et services près de chez vous.</p>
+    <form class="search" id="searchForm"><input id="searchInput" type="search" placeholder="Que recherchez-vous ?" aria-label="Rechercher"><button>Rechercher</button></form>
   </section>
+  <main class="container">
+    <h2 class="section-title">Nos catégories</h2>
+    <nav class="categories" aria-label="Catégories">
+      <button class="category active" data-category="Tout">🏪 Tout</button><button class="category" data-category="Téléphones">📱 Téléphones</button><button class="category" data-category="Mode">👕 Mode</button><button class="category" data-category="Informatique">💻 Informatique</button><button class="category" data-category="Maison">🏠 Maison</button><button class="category" data-category="Véhicules">🚗 Véhicules</button><button class="category" data-category="Beauté">💄 Beauté</button><button class="category" data-category="Services">🛠️ Services</button>
+    </nav>
+    <div class="section-head"><h2 class="section-title">🔥 Annonces disponibles</h2><button class="btn" id="openSell2">Vendre un produit</button></div>
+    <div id="products" class="products" aria-live="polite"></div>
+  </main>
+  <section class="assistant"><div class="assistant-box"><h2 class="section-title">🤖 Assistant LION MARKET</h2><p>Posez une question sur les produits ou les commandes.</p><div id="chatMessages" class="chat-messages" aria-live="polite"><div class="message bot">Bonjour ! Comment puis-je vous aider ?</div></div><form id="chatForm" class="chat-controls"><input id="chatInput" maxlength="2000" placeholder="Ex. Je cherche un téléphone à Douala" autocomplete="off" required><button class="btn" id="sendChat">Envoyer</button></form></div></section>
+  <footer><div class="logo">🦁 LION <span>MARKET</span></div><p>Achetez. Vendez. Développez votre commerce.</p><p>Une marketplace pensée pour le Cameroun 🇨🇲</p></footer>
 
-  <section>
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-      <h2>🔥 Nos annonces</h2>
-      <button class="btn" onclick="openModal('sell')">+ Vendre un produit</button>
-    </div>
-    <div class="products" id="products"></div>
-  </section>
-
-  <section class="contact">
-    <h2>🦁 Vendez avec LION MARKET</h2>
-    <p>Vous êtes commerçant ou entrepreneur au Cameroun ?</p>
-    <p>Publiez vos annonces et trouvez de nouveaux clients !</p>
-    <button class="btn" onclick="openModal('sell')">Déposer une annonce</button>
-  </section>
-
-  <section class="assistant">
-    <div class="assistant-box">
-      <h2>🤖 Assistant LION MARKET</h2>
-      <div id="chatMessages">
-        <div class="message bot">Bonjour ! Je peux vous aider à trouver un produit, comparer nos offres ou répondre à vos questions sur le site.</div>
-      </div>
-      <div class="chat-controls">
-        <input id="chatInput" type="text" placeholder="Posez une question sur nos produits..." autocomplete="off">
-        <button class="btn" id="sendChat">Envoyer</button>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    © 2026 LION MARKET - Le marché de proximité au Cameroun 🇨🇲
-    <br>Achetez. Vendez. Grandissez.
-  </footer>
-
-  <div class="modal" id="sell">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('sell')">✖</span>
-      <h2>Déposer une annonce</h2>
-      <form id="sellForm">
-        <input id="pname" placeholder="Nom du produit" required>
-        <input id="pprice" type="number" placeholder="Prix en FCFA" required min="1">
-        <select id="pcat">
-          <option>Téléphones</option><option>Informatique</option>
-          <option>Mode</option><option>Maison</option>
-          <option>Transport</option><option>Beauté</option><option>Services</option>
-        </select>
-        <input id="pimage" type="url" placeholder="Lien de la photo (facultatif)">
-        <textarea id="pdesc" placeholder="Description du produit"></textarea>
-        <button class="btn" type="submit">Publier l'annonce</button>
+  <div class="modal" id="sellModal" role="dialog" aria-modal="true" aria-labelledby="sellTitle">
+    <div class="modal-content"><div class="close-row"><h2 id="sellTitle">Publier une annonce</h2><button type="button" class="close" aria-label="Fermer">×</button></div>
+      <form id="productForm">
+        <label for="name">Nom du produit</label><input id="name" maxlength="100" required placeholder="Ex. Samsung Galaxy">
+        <label for="price">Prix en FCFA</label><input id="price" type="number" min="1" max="1000000000" step="1" required placeholder="Ex. 75000">
+        <label for="category">Catégorie</label><select id="category" required><option>Téléphones</option><option>Informatique</option><option>Mode</option><option>Maison</option><option>Véhicules</option><option>Beauté</option><option>Services</option></select>
+        <label for="city">Ville</label><input id="city" maxlength="80" required placeholder="Ex. Yaoundé">
+        <label for="phone">Votre WhatsApp (indicatif inclus, ex. 2376…)</label><input id="phone" inputmode="numeric" pattern="[0-9+() -]{9,20}" required placeholder="2376XXXXXXXX">
+        <label for="photo">Lien de la photo (facultatif)</label><input id="photo" type="url" placeholder="https://…">
+        <label for="description">Description (facultatif)</label><textarea id="description" maxlength="1000" placeholder="Décrivez votre annonce"></textarea>
+        <div class="modal-actions"><button class="btn" id="publishButton">Publier</button><button class="secondary close" type="button">Annuler</button></div>
       </form>
     </div>
   </div>
-
-  <div class="modal" id="cart">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal('cart')">✖</span>
-      <h2>🛒 Mon panier</h2>
-      <div id="cartItems"></div>
-      <h3 id="total" style="margin:15px 0">Total : 0 FCFA</h3>
-      <button class="btn" onclick="checkout()">Commander sur WhatsApp</button>
-    </div>
-  </div>
-
   <script>
-    let products = [
-      { id: 1, name: 'Smartphone Android', price: 75000, cat: 'Téléphones', desc: 'Smartphone neuf', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500' },
-      { id: 2, name: 'Ordinateur portable', price: 185000, cat: 'Informatique', desc: 'Ordinateur pour travail', image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500' },
-      { id: 3, name: 'Chaussures tendance', price: 15000, cat: 'Mode', desc: 'Chaussures modernes', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500' },
-      { id: 4, name: 'Montre élégante', price: 12000, cat: 'Mode', desc: 'Montre pour tous', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500' },
-      { id: 5, name: 'Sac moderne', price: 18000, cat: 'Mode', desc: 'Sac de qualité', image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500' },
-      { id: 6, name: 'Canapé confortable', price: 150000, cat: 'Maison', desc: 'Canapé pour salon', image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500' }
-    ];
-
-    let cart = [];
-    let current = 'Tous';
-
-    function safe(value) {
-      return String(value).replace(/[&<>"']/g, (char) => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
-      }[char]));
+    const productsEl=document.getElementById('products');
+    let products=[];let selectedCategory='Tout';let shopWhatsApp='237656342696';
+    const escapeHTML=(value)=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const normalizePhone=(value)=>String(value||'').replace(/\D/g,'');
+    function renderProducts(){
+      const query=document.getElementById('searchInput').value.trim().toLocaleLowerCase('fr');
+      const found=products.filter(p=>(selectedCategory==='Tout'||p.category===selectedCategory)&&`${p.name} ${p.city} ${p.category} ${p.description}`.toLocaleLowerCase('fr').includes(query));
+      if(!found.length){productsEl.innerHTML='<div class="empty">Aucune annonce trouvée.</div>';return;}
+      productsEl.innerHTML=found.map(p=>{const phone=normalizePhone(p.phone)||shopWhatsApp;const text=`Bonjour, je suis intéressé(e) par ${p.name} au prix de ${Number(p.price).toLocaleString('fr-FR')} FCFA.`;return `<article class="product"><img src="${escapeHTML(p.image||'https://placehold.co/600x400?text=Lion+Market')}" alt="${escapeHTML(p.name)}" loading="lazy" onerror="this.src='https://placehold.co/600x400?text=Lion+Market'"><div class="product-info"><h3>${escapeHTML(p.name)}</h3><div class="price">${Number(p.price).toLocaleString('fr-FR')} FCFA</div><div class="location">📍 ${escapeHTML(p.city)} · ${escapeHTML(p.category)}</div><p class="description">${escapeHTML(p.description||'Contactez le vendeur pour plus de détails.')}</p><a class="contact" href="https://wa.me/${encodeURIComponent(phone)}?text=${encodeURIComponent(text)}" target="_blank" rel="noopener noreferrer">Contacter le vendeur</a></div></article>`;}).join('');
     }
-
-    function render() {
-      const q = document.getElementById('search').value.toLowerCase();
-      const list = products.filter((p) => {
-        const matchesCategory = current === 'Tous' || p.cat === current;
-        const text = `${p.name} ${p.desc} ${p.cat}`.toLowerCase();
-        return matchesCategory && text.includes(q);
-      });
-
-      document.getElementById('products').innerHTML = list.map((p) => `
-        <div class="product">
-          <img src="${safe(p.image)}" alt="${safe(p.name)}" onerror="this.src='https://placehold.co/400x300?text=Lion+Market'">
-          <div class="product-info">
-            <h3>${safe(p.name)}</h3>
-            <div class="price">${p.price.toLocaleString('fr-FR')} FCFA</div>
-            <p>${safe(p.desc)}</p>
-            <button class="add" onclick="addCart(${p.id})">Ajouter au panier</button>
-          </div>
-        </div>`).join('') || '<p>Aucun produit trouvé.</p>';
-    }
-
-    function category(c, el) {
-      current = c;
-      document.querySelectorAll('.cat').forEach((x) => x.classList.remove('active'));
-      el.classList.add('active');
-      render();
-    }
-
-    function addCart(id) {
-      const product = products.find((x) => x.id === id);
-      if (!product) return;
-      cart.push(product);
-      document.getElementById('count').textContent = cart.length;
-      alert('Produit ajouté au panier !');
-    }
-
-    function openModal(id) {
-      document.getElementById(id).style.display = 'block';
-      if (id === 'cart') showCart();
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-
-    function showCart() {
-      document.getElementById('cartItems').innerHTML = cart.map((p, i) => `
-        <div class="cart-item">${safe(p.name)} - ${p.price.toLocaleString('fr-FR')} FCFA
-          <button onclick="removeCart(${i})">Retirer</button>
-        </div>`).join('') || 'Votre panier est vide.';
-
-      const total = cart.reduce((sum, p) => sum + p.price, 0);
-      document.getElementById('total').textContent = 'Total : ' + total.toLocaleString('fr-FR') + ' FCFA';
-    }
-
-    function removeCart(index) {
-      cart.splice(index, 1);
-      document.getElementById('count').textContent = cart.length;
-      showCart();
-    }
-
-    function checkout() {
-      if (!cart.length) {
-        alert('Votre panier est vide.');
-        return;
-      }
-
-      const message = 'Bonjour, je souhaite commander :\n' +
-        cart.map((p) => `${p.name} - ${p.price} FCFA`).join('\n') +
-        '\nTotal : ' + cart.reduce((sum, p) => sum + p.price, 0) + ' FCFA';
-
-      const phone = '237655000000';
-      window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(message), '_blank');
-    }
-
-    document.getElementById('sellForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      products.unshift({
-        id: Date.now(),
-        name: document.getElementById('pname').value,
-        price: Number(document.getElementById('pprice').value),
-        cat: document.getElementById('pcat').value,
-        desc: document.getElementById('pdesc').value,
-        image: document.getElementById('pimage').value || 'https://placehold.co/400x300?text=Lion+Market'
-      });
-      this.reset();
-      closeModal('sell');
-      render();
-      alert('Annonce ajoutée à la page !');
-    });
-
-    function appendMessage(role, text) {
-      const wrapper = document.getElementById('chatMessages');
-      const msg = document.createElement('div');
-      msg.className = 'message ' + role;
-      msg.textContent = text;
-      wrapper.appendChild(msg);
-      wrapper.scrollTop = wrapper.scrollHeight;
-    }
-
-    function buildLocalReply(message) {
-      const text = message.toLowerCase();
-      if (text.includes('telephone') || text.includes('smartphone')) {
-        return 'Nous proposons des smartphones de qualité. Le plus demandé est le Smartphone Android à 75 000 FCFA.';
-      }
-      if (text.includes('ordinateur') || text.includes('informatique')) {
-        return 'Notre catégorie informatique contient des ordinateurs portables et autres produits électroniques. Le plus populaire est l’ordinateur portable à 185 000 FCFA.';
-      }
-      if (text.includes('mode') || text.includes('chaussure') || text.includes('sac')) {
-        return 'La section Mode propose des chaussures, montres et sacs tendance. Vous pouvez aussi filtrer par catégorie pour trouver les meilleurs articles.';
-      }
-      if (text.includes('livraison') || text.includes('commander')) {
-        return 'Vous pouvez ajouter vos produits au panier puis passer commande sur WhatsApp directement depuis le bouton “Commander sur WhatsApp”.';
-      }
-      if (text.includes('prix') || text.includes('coût')) {
-        return 'Les prix varient selon les produits. Vous pouvez voir les offres directement sur la page d’accueil et filtrer par catégorie.';
-      }
-      return 'Je peux vous aider à trouver un produit, expliquer la catégorie ou vous guider pour passer commande. Demandez par exemple : “Téléphone”, “Ordinateur”, “Commande”, ou “Mode”.';
-    }
-
-    async function sendChatMessage() {
-      const input = document.getElementById('chatInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      appendMessage('user', text);
-      input.value = '';
-      const button = document.getElementById('sendChat');
-      button.disabled = true;
-      button.textContent = '...';
-
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text })
-        });
-
-        const data = await response.json();
-        const reply = response.ok && data.reply ? data.reply : buildLocalReply(text);
-        appendMessage('bot', reply);
-      } catch (error) {
-        appendMessage('bot', buildLocalReply(text));
-      } finally {
-        button.disabled = false;
-        button.textContent = 'Envoyer';
-        input.focus();
-      }
-    }
-
-    document.getElementById('sendChat').addEventListener('click', sendChatMessage);
-    document.getElementById('chatInput').addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        sendChatMessage();
-      }
-    });
-
-    render();
+    async function loadProducts(){productsEl.innerHTML='<div class="empty">Chargement des annonces…</div>';try{const response=await fetch('/api/products');if(!response.ok)throw new Error('load failed');const data=await response.json();products=Array.isArray(data.products)?data.products:[];renderProducts();}catch{productsEl.innerHTML='<div class="empty">Impossible de charger les annonces. Réessayez dans quelques instants.</div>';}}
+    async function loadConfig(){try{const response=await fetch('/api/config');if(response.ok){const data=await response.json();shopWhatsApp=normalizePhone(data.whatsappNumber)||shopWhatsApp;}}catch{}}
+    function openModal(){document.getElementById('sellModal').classList.add('open');document.getElementById('name').focus();}
+    function closeModal(){document.getElementById('sellModal').classList.remove('open');}
+    document.getElementById('openSell').addEventListener('click',openModal);document.getElementById('openSell2').addEventListener('click',openModal);document.querySelectorAll('.close').forEach(button=>button.addEventListener('click',closeModal));
+    document.getElementById('sellModal').addEventListener('click',event=>{if(event.target.id==='sellModal')closeModal();});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape')closeModal();});
+    document.querySelectorAll('.category').forEach(button=>button.addEventListener('click',()=>{selectedCategory=button.dataset.category;document.querySelectorAll('.category').forEach(item=>item.classList.toggle('active',item===button));renderProducts();}));
+    document.getElementById('searchForm').addEventListener('submit',event=>{event.preventDefault();renderProducts();});document.getElementById('searchInput').addEventListener('input',renderProducts);
+    document.getElementById('productForm').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('publishButton');button.disabled=true;button.textContent='Publication…';const payload={name:document.getElementById('name').value.trim(),price:Number(document.getElementById('price').value),category:document.getElementById('category').value,city:document.getElementById('city').value.trim(),phone:normalizePhone(document.getElementById('phone').value),image:document.getElementById('photo').value.trim(),description:document.getElementById('description').value.trim()};try{const response=await fetch('/api/products',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();if(!response.ok)throw new Error(data.error||'Publication impossible.');event.target.reset();closeModal();await loadProducts();alert('Votre annonce est publiée.');}catch(error){alert(error.message||'Impossible de publier l’annonce.');}finally{button.disabled=false;button.textContent='Publier';}});
+    document.getElementById('chatForm').addEventListener('submit',async event=>{event.preventDefault();const input=document.getElementById('chatInput');const text=input.value.trim();if(!text)return;const messages=document.getElementById('chatMessages');const user=document.createElement('div');user.className='message user';user.textContent=text;messages.appendChild(user);input.value='';const button=document.getElementById('sendChat');button.disabled=true;button.textContent='…';try{const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text})});const data=await response.json();if(!response.ok)throw new Error(data.error||'Assistant indisponible.');const answer=document.createElement('div');answer.className='message bot';answer.textContent=data.reply||'Je peux vous aider à chercher un produit.';messages.appendChild(answer);}catch(error){const answer=document.createElement('div');answer.className='message bot';answer.textContent=error.message;messages.appendChild(answer);}finally{messages.scrollTop=messages.scrollHeight;button.disabled=false;button.textContent='Envoyer';input.focus();}});
+    Promise.all([loadConfig(),loadProducts()]);
   </script>
 </body>
 </html>

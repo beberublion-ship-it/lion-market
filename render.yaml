@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: lion-market
+    runtime: node
+    plan: starter
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: lion-market-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_PATH
+        value: /var/data/lionmarket.db
+      - key: WHATSAPP_NUMBER
+        value: 237656342696
+      - key: OPENAI_API_KEY
+        sync: false
