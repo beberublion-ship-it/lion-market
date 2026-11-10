@@ -24,7 +24,7 @@
   <main class="container">
     <h2 class="section-title">Nos catégories</h2>
     <nav class="categories" aria-label="Catégories">
-      <button class="category active" data-category="Tout">🏪 Tout</button><button class="category" data-category="Téléphones">📱 Téléphones</button><button class="category" data-category="Mode">👕 Mode</button><button class="category" data-category="Informatique">💻 Informatique</button><button class="category" data-category="Maison">🏠 Maison</button><button class="category" data-category="Véhicules">🚗 Véhicules</button><button class="category" data-category="Beauté">💄 Beauté</button><button class="category" data-category="Services">🛠️ Services</button>
+      <button class="category active" data-category="Tout">🏪 Tout</button><button class="category" data-category="Téléphones">📱 Téléphones</button><button class="category" data-category="Mode">👕 Mode</button><button class="category" data-category="Informatique">💻 Informatique</button><button class="category" data-category="Maison">🏠 Maison</button><button class="category" data-category="Véhicules">🚗 Véhicules</button><button class="category" data-category="Transport">🚚 Transport</button><button class="category" data-category="Beauté">💄 Beauté</button><button class="category" data-category="Services">🛠️ Services</button>
     </nav>
     <div class="section-head"><h2 class="section-title">🔥 Annonces disponibles</h2><button class="btn" id="openSell2">Vendre un produit</button></div>
     <div id="products" class="products" aria-live="polite"></div>
@@ -37,7 +37,7 @@
       <form id="productForm">
         <label for="name">Nom du produit</label><input id="name" maxlength="100" required placeholder="Ex. Samsung Galaxy">
         <label for="price">Prix en FCFA</label><input id="price" type="number" min="1" max="1000000000" step="1" required placeholder="Ex. 75000">
-        <label for="category">Catégorie</label><select id="category" required><option>Téléphones</option><option>Informatique</option><option>Mode</option><option>Maison</option><option>Véhicules</option><option>Beauté</option><option>Services</option></select>
+        <label for="category">Catégorie</label><select id="category" required><option>Téléphones</option><option>Informatique</option><option>Mode</option><option>Maison</option><option>Véhicules</option><option>Transport</option><option>Beauté</option><option>Services</option></select>
         <label for="city">Ville</label><input id="city" maxlength="80" required placeholder="Ex. Yaoundé">
         <label for="phone">Votre WhatsApp (indicatif inclus, ex. 2376…)</label><input id="phone" inputmode="numeric" pattern="[0-9+() -]{9,20}" required placeholder="2376XXXXXXXX">
         <label for="photo">Lien de la photo (facultatif)</label><input id="photo" type="url" placeholder="https://…">
