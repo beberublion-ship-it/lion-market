@@ -23,7 +23,6 @@ async function supabase(env, path, init = {}) {
     ...init,
     headers: {
       apikey: env.SUPABASE_PUBLISHABLE_KEY,
-      Authorization: `Bearer ${env.SUPABASE_PUBLISHABLE_KEY}`,
       "content-type": "application/json",
       ...(init.headers || {})
     }
@@ -105,12 +104,15 @@ export default {
         const message = typeof input.message === "string" ? input.message.trim().slice(0, 2000) : "";
         if (!message) return json({ error: "Le message est vide." }, 400);
         const rows = await supabase(env, "annonces?select=nom,prix,categorie,ville,description&order=created_at.desc&limit=100");
-        const q = message.toLocaleLowerCase("fr");
-        const matches = (rows || []).filter(p => `${p.nom} ${p.categorie} ${p.ville} ${p.description || ""}`.toLocaleLowerCase("fr").includes(q));
+        const terms = message.toLocaleLowerCase("fr").split(/\s+/).filter(term => term.length >= 3);
+        const matches = (rows || []).filter(p => {
+          const haystack = `${p.nom} ${p.categorie} ${p.ville} ${p.description || ""}`.toLocaleLowerCase("fr");
+          return terms.some(term => haystack.includes(term));
+        });
         let reply = matches.length
           ? `J’ai trouvé : ${matches.slice(0, 3).map(p => `${p.nom} (${Number(p.prix).toLocaleString("fr-FR")} FCFA, ${p.ville})`).join(" ; ")}.`
           : "Je peux vous aider à chercher un produit ou une catégorie. Essayez « téléphone », « mode » ou le nom d’une ville.";
-        if (!matches.length && /commande|acheter|whatsapp|livraison/.test(q)) {
+        if (!matches.length && /commande|acheter|whatsapp|livraison/.test(message.toLocaleLowerCase("fr"))) {
           reply = "Choisissez une annonce et contactez le vendeur sur WhatsApp. Le paiement et la livraison se règlent directement avec lui.";
         }
         return json({ reply, source: "local" });
