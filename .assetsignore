@@ -1,0 +1,3 @@
+# Fichiers internes : ne pas publier comme ressources du site
+worker.js
+wrangler.jsonc
