@@ -1,0 +1,44 @@
+name: LION MARKET production health
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "worker.js"
+      - "index.html"
+      - "wrangler.jsonc"
+      - ".github/workflows/lion-market-health.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lion-market-production-health
+  cancel-in-progress: true
+
+jobs:
+  check-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check homepage
+        run: |
+          set -euo pipefail
+          code="$(curl --silent --show-error --location --output /tmp/home.html --write-out '%{http_code}' --max-time 25 https://lion-market.beberublion.workers.dev/)"
+          test "$code" = "200"
+          grep -qi "LION MARKET" /tmp/home.html
+
+      - name: Check Worker health and Supabase connection
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 25 https://lion-market.beberublion.workers.dev/health -o /tmp/health.json
+          jq -e '.ok == true and .name == "lion-market" and .database == "supabase"' /tmp/health.json
+
+      - name: Check public product API
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 25 https://lion-market.beberublion.workers.dev/api/products -o /tmp/products.json
+          jq -e '.products | type == "array"' /tmp/products.json

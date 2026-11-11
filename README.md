@@ -2,12 +2,22 @@
 
 Marketplace camerounaise connectée à Supabase, avec annonces en FCFA, contact WhatsApp et assistant local gratuit.
 
-## Architecture
+## Architecture cible
 
-- GitHub : dépôt source.
-- Render : serveur Node.js avec déploiement automatique depuis la branche `main`.
-- Supabase : base PostgreSQL persistante pour les annonces.
-- WhatsApp : contact direct entre acheteurs et vendeurs.
+- **Production cible :** Cloudflare Workers avec les assets statiques de `index.html`.
+- **Données :** Supabase PostgreSQL ; Supabase Auth et Storage seront utilisés pour les comptes vendeurs, les commandes et les photos.
+- **Contact :** WhatsApp dans un premier temps.
+- **Code source :** GitHub, branche `main`.
+
+**Important :** la production Cloudflare n'est pas encore confirmée. Un ancien déploiement a échoué avec l'erreur Cloudflare API 7003. Ne considérez pas le Worker comme opérationnel tant que `/` et `/health` n'ont pas été testés après un déploiement réussi.
+
+Le dépôt contient encore une ancienne pile Node.js/Render (`server.js`, `database.js`, `render.yaml`). Elle est conservée provisoirement pour éviter toute interruption ; elle ne doit pas être considérée comme une deuxième production à maintenir. Elle sera retirée après validation de Cloudflare.
+
+Le plan détaillé et les étapes de migration se trouvent dans [docs/PRODUCTION-PLAN.md](docs/PRODUCTION-PLAN.md).
+
+## Surveillance automatique
+
+Le workflow [LION MARKET production health](.github/workflows/lion-market-health.yml) vérifie toutes les 30 minutes la page d'accueil, le point de santé du Worker et l'API des annonces. Il s'exécute également après les modifications pertinentes sur `main`. Les contrôles ne peuvent confirmer le bon fonctionnement que si le Worker est déjà déployé.
 
 ## Développement local
 
@@ -25,31 +35,20 @@ Ouvrir http://localhost:3000.
 ## Variables d'environnement
 
 - `SUPABASE_URL` : URL du projet Supabase.
-- `SUPABASE_PUBLISHABLE_KEY` : clé publishable Supabase. Elle est conçue pour être utilisée par l'application et reste protégée par les politiques RLS.
+- `SUPABASE_PUBLISHABLE_KEY` : clé publishable Supabase, conçue pour être utilisée côté client et protégée par les politiques RLS.
 - `WHATSAPP_NUMBER` : numéro de contact avec indicatif international, chiffres uniquement.
-- `OPENAI_API_KEY` : facultative et payante selon l'utilisation. Sans cette clé, l'assistant local fonctionne sans frais d'API.
+- `OPENAI_API_KEY` : facultative et payante selon l'utilisation. Sans cette clé, l'assistant local reste disponible.
 
 Ne jamais mettre une clé Supabase secrète/service_role ni une clé OpenAI dans le dépôt GitHub.
 
-## Déploiement Render gratuit
+## Base de données actuelle
 
-Le fichier `render.yaml` définit un service web sur le plan Free, sans disque persistant. Les annonces sont stockées dans Supabase et ne dépendent donc pas du système de fichiers éphémère de Render.
+La table `public.annonces` existe et utilise les colonnes `id, nom, prix, categorie, ville, image_url, telephone, description, created_at`. Les annonces existantes doivent être conservées pendant toute migration. RLS est activé ; les politiques actuelles autorisent la lecture publique et l'insertion publique validée. Les comptes vendeurs, la propriété des annonces, les commandes et la modération restent à construire.
 
-1. Dans Render, ouvrir **New → Blueprint**.
-2. Connecter le dépôt `beberublion-ship-it/lion-market`.
-3. Vérifier que le service `lion-market` est sur le plan **Free**, puis appliquer le Blueprint.
-4. Render déploie automatiquement les futurs commits de la branche `main`.
-
-Les services Render Free peuvent s'endormir après 15 minutes d'inactivité et le premier chargement suivant peut prendre environ une minute. Render Free n'est pas destiné à une application commerciale critique.
-
-## Base de données
-
-La table existante `public.annonces` est utilisée avec les colonnes `id, nom, prix, categorie, ville, image_url, telephone, description, created_at`. Les annonces déjà présentes sont conservées. La lecture et la création passent par les politiques RLS de Supabase.
-
-## Vérifications
+## Vérifications locales
 
 ```bash
 npm run check
 ```
 
-Le point de contrôle de santé est `/health`. Il vérifie la connexion à Supabase.
+Le point de contrôle de santé est `/health`. Il vérifie la connexion à Supabase dans le serveur Node.js actuel.
