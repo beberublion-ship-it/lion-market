@@ -15,6 +15,10 @@ Le dépôt contient encore une ancienne pile Node.js/Render (`server.js`, `datab
 
 Le plan détaillé et les étapes de migration se trouvent dans [docs/PRODUCTION-PLAN.md](docs/PRODUCTION-PLAN.md).
 
+## Surveillance automatique
+
+Le workflow [LION MARKET production health](.github/workflows/lion-market-health.yml) vérifie toutes les 30 minutes la page d'accueil, le point de santé du Worker et l'API des annonces. Il s'exécute également après les modifications pertinentes sur `main`. Les contrôles ne peuvent confirmer le bon fonctionnement que si le Worker est déjà déployé.
+
 ## Développement local
 
 Prérequis : Node.js 22 ou plus récent.
