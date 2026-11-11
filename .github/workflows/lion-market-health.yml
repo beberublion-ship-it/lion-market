@@ -24,6 +24,9 @@ concurrency:
 
 jobs:
   check-production:
+    # A failed deployment must not launch a second, misleading health check
+    # against the previous production version.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
