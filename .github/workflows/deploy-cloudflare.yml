@@ -48,7 +48,7 @@ jobs:
           fi
 
           # Accept a raw token, or a value accidentally pasted with Bearer/quotes.
-          TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '\r\n' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g; s/^Bearer[[:space:]]+//I; s/^["'\\'']|["'\\'']$//g')"
+          TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '\r\n' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g; s/^Bearer[[:space:]]+//I')"
           if [ -z "$TOKEN" ]; then
             echo "::error::CLOUDFLARE_API_TOKEN is empty after normalization."
             exit 1
@@ -63,7 +63,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '\r\n' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g; s/^Bearer[[:space:]]+//I; s/^["'\\'']|["'\\'']$//g')"
+          TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '\r\n' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g; s/^Bearer[[:space:]]+//I')"
           export CLOUDFLARE_API_TOKEN="$TOKEN"
           npx --yes wrangler@4.160.0 whoami
 
@@ -73,6 +73,6 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '\r\n' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g; s/^Bearer[[:space:]]+//I; s/^["'\\'']|["'\\'']$//g')"
+          TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '\r\n' | sed -E 's/^[[:space:]]+|[[:space:]]+$//g; s/^Bearer[[:space:]]+//I')"
           export CLOUDFLARE_API_TOKEN="$TOKEN"
           npx --yes wrangler@4.160.0 deploy --config wrangler.jsonc
