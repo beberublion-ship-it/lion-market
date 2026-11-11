@@ -41,6 +41,10 @@ jobs:
             head -c 500 /tmp/home.html || true
             exit 1
           fi
+          if ! grep -qi "Transport" /tmp/home.html || ! grep -qi "Déposer une annonce" /tmp/home.html; then
+            echo "::error::Homepage is missing a core marketplace feature."
+            exit 1
+          fi
 
       - name: Check Worker health and Supabase connection
         run: |
@@ -52,6 +56,17 @@ jobs:
             exit 1
           fi
           jq -e '.ok == true and .name == "lion-market" and .database == "supabase"' /tmp/health.json
+
+      - name: Check public WhatsApp configuration
+        run: |
+          set -euo pipefail
+          code="$(curl --silent --show-error --location --output /tmp/config.json --write-out '%{http_code}' --max-time 25 https://lion-market.beberublion.workers.dev/api/config)"
+          if [ "$code" != "200" ]; then
+            echo "::error::Public configuration API returned HTTP $code"
+            cat /tmp/config.json || true
+            exit 1
+          fi
+          jq -e '.whatsappNumber == "237656342697"' /tmp/config.json
 
       - name: Check public product API
         run: |
