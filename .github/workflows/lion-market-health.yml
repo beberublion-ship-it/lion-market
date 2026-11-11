@@ -11,6 +11,9 @@ on:
       - "index.html"
       - "wrangler.jsonc"
       - ".github/workflows/lion-market-health.yml"
+  workflow_run:
+    workflows: ["Deploy LION MARKET to Cloudflare Workers"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -28,17 +31,35 @@ jobs:
         run: |
           set -euo pipefail
           code="$(curl --silent --show-error --location --output /tmp/home.html --write-out '%{http_code}' --max-time 25 https://lion-market.beberublion.workers.dev/)"
-          test "$code" = "200"
-          grep -qi "LION MARKET" /tmp/home.html
+          if [ "$code" != "200" ]; then
+            echo "::error::Homepage returned HTTP $code"
+            head -c 500 /tmp/home.html || true
+            exit 1
+          fi
+          if ! grep -qi "LION MARKET" /tmp/home.html; then
+            echo "::error::Homepage responded but did not contain the LION MARKET title."
+            head -c 500 /tmp/home.html || true
+            exit 1
+          fi
 
       - name: Check Worker health and Supabase connection
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --max-time 25 https://lion-market.beberublion.workers.dev/health -o /tmp/health.json
+          code="$(curl --silent --show-error --location --output /tmp/health.json --write-out '%{http_code}' --max-time 25 https://lion-market.beberublion.workers.dev/health)"
+          if [ "$code" != "200" ]; then
+            echo "::error::Health endpoint returned HTTP $code"
+            cat /tmp/health.json || true
+            exit 1
+          fi
           jq -e '.ok == true and .name == "lion-market" and .database == "supabase"' /tmp/health.json
 
       - name: Check public product API
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --max-time 25 https://lion-market.beberublion.workers.dev/api/products -o /tmp/products.json
+          code="$(curl --silent --show-error --location --output /tmp/products.json --write-out '%{http_code}' --max-time 25 https://lion-market.beberublion.workers.dev/api/products)"
+          if [ "$code" != "200" ]; then
+            echo "::error::Products API returned HTTP $code"
+            cat /tmp/products.json || true
+            exit 1
+          fi
           jq -e '.products | type == "array"' /tmp/products.json
